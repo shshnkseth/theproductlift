@@ -128,14 +128,16 @@
   'use strict';
   
   const preloader = document.querySelector('.preloader_wrap');
-  const logo = document.querySelector('.preloader_logo_svg');
+  const logoMount = document.querySelector('.preloader_logo_wrap');
   const body = document.body;
+  if (!preloader || !logoMount) return;
+
+  // Swap legacy inline SVG for the latest logo asset in the loader.
+  logoMount.innerHTML = '<img class="preloader_logo_asset" src="images/logo-on-dark.png" alt="The Product Lift" style="width:min(220px,36vw);height:auto;display:block;">';
+  const logo = logoMount.querySelector('.preloader_logo_asset');
+  if (!logo) return;
 
   const originalBg = preloader.style.background;
-
-  logo.querySelectorAll('.u-svg').forEach(el => {
-    el.style.fill = 'var(--mono-palette--mono-800)';
-  });
 
   const logoFilled = logo.cloneNode(true);
   logoFilled.style.cssText = `
@@ -148,9 +150,6 @@
     pointer-events: none;
   `;
   logoFilled.setAttribute('aria-hidden', 'true');
-  logoFilled.querySelectorAll('.u-svg').forEach(el => {
-    el.style.fill = 'var(--mono-palette--mono-100)';
-  });
 
   const logoWrap = document.createElement('div');
   logoWrap.style.cssText = `
@@ -675,11 +674,11 @@ input:focus-visible {
   function checkBusinessHours(timeParts) {
     const { hour, minute, weekday } = timeParts;
     if (weekday === 'Sun') return false;
-    // Saturday: 10:00–14:00
+    // Saturday: 10:00â14:00
     if (weekday === 'Sat') {
       return hour >= 10 && (hour < 14 || (hour === 14 && minute === 0));
     }
-    // Monday–Friday: 09:00–17:30
+    // MondayâFriday: 09:00â17:30
     return !(hour < 9 || hour > 17 || (hour === 17 && minute > 30));
   }
   
@@ -719,13 +718,24 @@ input:focus-visible {
       });
       
       const isOnline = checkBusinessHours(timeParts);
-      const statusString = isOnline ? '(Online)' : '(Offline)';
-      
+      const statusLabel = isOnline ? 'Online' : 'Offline';
+
       statusElements.forEach(el => {
-        el.textContent = statusString;
-        el.style.color = isOnline
-          ? 'var(--_theme---heading)'
-          : 'var(--_theme---text-focus-tertiary)';
+        // Render a compact status dot with native hover tooltip.
+        el.textContent = '';
+        el.title = statusLabel;
+        el.setAttribute('aria-label', `Status: ${statusLabel}`);
+        el.style.display = 'inline-block';
+        el.style.width = '8px';
+        el.style.height = '8px';
+        el.style.borderRadius = '999px';
+        el.style.verticalAlign = 'middle';
+        el.style.marginRight = '8px';
+        el.style.cursor = 'help';
+        el.style.backgroundColor = isOnline ? '#22c55e' : '#ef4444';
+        el.style.boxShadow = isOnline
+          ? '0 0 0 1px rgba(34, 197, 94, 0.35), 0 0 8px rgba(34, 197, 94, 0.4)'
+          : '0 0 0 1px rgba(239, 68, 68, 0.35), 0 0 8px rgba(239, 68, 68, 0.25)';
       });
     }
     
@@ -817,7 +827,7 @@ window.addEventListener('DOMContentLoaded', function() {
         onEnterBack: batch => batch.forEach(animateReveal)
       });
 
-      // Reset only when fully scrolled off the top — matches original behaviour
+      // Reset only when fully scrolled off the top â matches original behaviour
       ScrollTrigger.batch(wrappers, {
         start: 'top bottom',
         end: 'bottom top',
@@ -991,7 +1001,7 @@ html:has(.nav_banner_wrap:not(.w-condition-invisible)):not(.hide-nav-banner) {
       const dist = Math.sqrt(dx * dx + dy * dy);
 
       if (dist < TRIGGER_RADIUS) {
-        // Normalise pull strength — full pull at centre, eases off at the radius edge
+        // Normalise pull strength â full pull at centre, eases off at the radius edge
         const strength = 1 - dist / TRIGGER_RADIUS;
 
         // Normalised -1 to +1 direction from centre
@@ -1011,7 +1021,7 @@ html:has(.nav_banner_wrap:not(.w-condition-invisible)):not(.hide-nav-banner) {
         });
 
       } else if (isActive) {
-        // Cursor left the radius — release
+        // Cursor left the radius â release
         isActive = false;
 
         gsap.to(logoWrap, {
@@ -1150,7 +1160,7 @@ html:has(.nav_banner_wrap:not(.w-condition-invisible)):not(.hide-nav-banner) {
   }
   
   // preloaderComplete fires as the slide-out begins, so nav
-  // animates in over the exiting preloader — feels more natural
+  // animates in over the exiting preloader â feels more natural
   window.addEventListener('preloaderComplete', animateNav);
 
   // Reset on back/forward cache restore so nav re-animates
@@ -1185,7 +1195,7 @@ html:has(.nav_banner_wrap:not(.w-condition-invisible)):not(.hide-nav-banner) {
       const dist = Math.sqrt(dx * dx + dy * dy);
 
       if (dist < TRIGGER_RADIUS) {
-        // Normalise pull strength — full pull at centre, eases off at the radius edge
+        // Normalise pull strength â full pull at centre, eases off at the radius edge
         const strength = 1 - dist / TRIGGER_RADIUS;
 
         // Normalised -1 to +1 direction from centre
@@ -1205,7 +1215,7 @@ html:has(.nav_banner_wrap:not(.w-condition-invisible)):not(.hide-nav-banner) {
         });
 
       } else if (isActive) {
-        // Cursor left the radius — release
+        // Cursor left the radius â release
         isActive = false;
 
         gsap.to(logoWrap, {
@@ -1344,7 +1354,7 @@ html:has(.nav_banner_wrap:not(.w-condition-invisible)):not(.hide-nav-banner) {
   }
   
   // preloaderComplete fires as the slide-out begins, so nav
-  // animates in over the exiting preloader — feels more natural
+  // animates in over the exiting preloader â feels more natural
   window.addEventListener('preloaderComplete', animateNav);
 
   // Reset on back/forward cache restore so nav re-animates
@@ -1573,7 +1583,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	}
 	createModals();
 });
-</script></div></dialog><section data-wf--section--variant="inherit" class="u-section u-min-height-screen" data-animate-on-load="true" style=""><div data-wf--spacer--variant="large" class="u-section-spacer w-variant-8cc18b30-4618-8767-0111-f6abfe45aaa3 u-ignore-trim"></div><div class="u-container u-gap-4 u-flex-grow"><div data-wf--grid--variant="autofit" style="" class="u-grid-wrapper u-flex-grow u-gap-row-6" data-number="34"><div role="none" data-large-columns="2" data-medium-columns="1" data-small-columns="0" data-xsmall-columns="0" class="u-grid w-variant-d58244bf-290f-ebb3-3aa0-352d6fa8e84f"><div data-wf--content-wrapper--variant="left" class="u-display-contents"><div class="u-content-wrapper u-height-full u-flex-vertical-wrap u-justify-content-between u-all-unset-medium"><div data-number="18" data-wf--typography-heading--variant="h1" class="u-text w-variant-792802b6-ccdb-f982-5023-5fa970cf03d0 w-richtext u-margin-bottom-6 u-heading-accent u-text-wrap-pretty"><h1>We shape products that ship.<br>End-to-end product design for founders and early-stage teams.</h1></div><div data-wf--content-wrapper--variant="left" class="u-display-contents"><div class="u-content-wrapper  "><div class="footer-clock_wrap u-margin-bottom-2"><span data-dynamic-status="" style="color: var(--_theme---text-focus-tertiary);">(Offline)</span><span data-dynamic-time="">Now, 8:59:19 PM IST</span></div><div data-number="39" data-wf--typography-paragraph--variant="inherit" class="u-text u-rich-text w-richtext u-margin-bottom-5 u-text-color-primary"><p>UI/UX design, AI product experiences, and scalable design systems for pre-seed to Series A teams - built to help you validate faster, ship with confidence, and create products people actually use.</p></div><div class="u-button-wrapper" style=""><div class="u-display-contents"><div data-wf--button-main--variant="primary" data-modal-trigger="contact" class="button_main_wrap u-text-transform-capitalize" data-button=" " data-trigger="hover focus"><div class="clickable_wrap u-cover-absolute"><a target="" href="/contact" class="clickable_link w-inline-block"><span class="clickable_text u-sr-only">Start a Project</span></a><button type="button" class="clickable_btn"><span class="clickable_text u-sr-only">Start a Project</span></button></div><div class="button_main_element"><div class="button_main_icon u-hide-if-empty"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 15 10" fill="currentColor" class="u-svg"><path d="M10 10L15 5L10 0L8.83333 1.16667L11.8333 4.16667H1.66667V0.833333H0V5.83333H11.8333L8.83333 8.83333L10 10Z" class="u-path"></path></svg></div><div class="button_main_decoration u-hide-if-empty"></div><div aria-hidden="true" class="button_main_text u-text-style-main u-text-transform-capitalize">Start a Project</div><div class="button_main_line"></div></div><div class="u-embed-js w-embed w-script"><script src="js/gsap.min_1.js"></script>
+</script></div></dialog><section data-wf--section--variant="inherit" class="u-section u-min-height-screen" data-animate-on-load="true" style=""><div data-wf--spacer--variant="large" class="u-section-spacer w-variant-8cc18b30-4618-8767-0111-f6abfe45aaa3 u-ignore-trim"></div><div class="u-container u-gap-4 u-flex-grow"><div data-wf--grid--variant="autofit" style="" class="u-grid-wrapper u-flex-grow u-gap-row-6" data-number="34"><div role="none" data-large-columns="2" data-medium-columns="1" data-small-columns="0" data-xsmall-columns="0" class="u-grid w-variant-d58244bf-290f-ebb3-3aa0-352d6fa8e84f"><div data-wf--content-wrapper--variant="left" class="u-display-contents"><div class="u-content-wrapper u-height-full u-flex-vertical-wrap u-justify-content-between u-all-unset-medium"><div data-number="18" data-wf--typography-heading--variant="h1" class="u-text w-variant-792802b6-ccdb-f982-5023-5fa970cf03d0 w-richtext u-margin-bottom-6 u-heading-accent u-text-wrap-pretty"><h1>We shape products that ship.<br>End-to-end product design for founders and early-stage teams.</h1></div><div data-wf--content-wrapper--variant="left" class="u-display-contents"><div class="u-content-wrapper  "><div class="footer-clock_wrap u-margin-bottom-2"><span data-dynamic-status="" title="Offline" aria-label="Status: Offline" style="display:inline-block;width:8px;height:8px;border-radius:999px;vertical-align:middle;transform:translateY(-1px);margin-right:8px;background-color:#ef4444;cursor:help;">&#9679;</span><span data-dynamic-time="">Now, 8:59:19 PM IST</span></div><div data-number="39" data-wf--typography-paragraph--variant="inherit" class="u-text u-rich-text w-richtext u-margin-bottom-5 u-text-color-primary"><p>UI/UX design, AI product experiences, and scalable design systems for pre-seed to Series A teams - built to help you validate faster, ship with confidence, and create products people actually use.</p></div><div class="u-button-wrapper" style=""><div class="u-display-contents"><div data-wf--button-main--variant="primary" data-modal-trigger="contact" class="button_main_wrap u-text-transform-capitalize" data-button=" " data-trigger="hover focus"><div class="clickable_wrap u-cover-absolute"><a target="" href="/contact" class="clickable_link w-inline-block"><span class="clickable_text u-sr-only">Start a Project</span></a><button type="button" class="clickable_btn"><span class="clickable_text u-sr-only">Start a Project</span></button></div><div class="button_main_element"><div class="button_main_icon u-hide-if-empty"><svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 15 10" fill="currentColor" class="u-svg"><path d="M10 10L15 5L10 0L8.83333 1.16667L11.8333 4.16667H1.66667V0.833333H0V5.83333H11.8333L8.83333 8.83333L10 10Z" class="u-path"></path></svg></div><div class="button_main_decoration u-hide-if-empty"></div><div aria-hidden="true" class="button_main_text u-text-style-main u-text-transform-capitalize">Start a Project</div><div class="button_main_line"></div></div><div class="u-embed-js w-embed w-script"><script src="js/gsap.min_1.js"></script>
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {
@@ -1779,7 +1789,7 @@ window.addEventListener('DOMContentLoaded', function() {
         });
         const words = split.words;
 
-        // Hide individual word spans from screen readers — parent text remains accessible
+        // Hide individual word spans from screen readers â parent text remains accessible
         words.forEach(word => word.setAttribute('aria-hidden', 'true'));
         
         gsap.set(words, { willChange: 'transform, opacity, filter' });
@@ -2020,7 +2030,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
 /* Lumos Breakpoints */
 
-/* Medium: 2 rows × 4 logos = 8 total */
+/* Medium: 2 rows Ã 4 logos = 8 total */
 @container (width < 60em) {
   .logo-wall_grid {
     grid-template-columns: repeat(4, 1fr);
@@ -2035,7 +2045,7 @@ window.addEventListener('DOMContentLoaded', function() {
   }
 }
 
-/* Small: 2 rows × 3 logos = 6 total */
+/* Small: 2 rows Ã 3 logos = 6 total */
 @container (width < 35em) {
   .logo-wall_grid {
     grid-template-columns: repeat(3, 1fr);
@@ -2046,14 +2056,14 @@ window.addEventListener('DOMContentLoaded', function() {
   }
 }
 
-/* XSmall: 3 rows × 2 logos = 6 total */
+/* XSmall: 3 rows Ã 2 logos = 6 total */
 @container (width < 25em) {
   .logo-wall_grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-/* Large (default): 1 row × 6 logos */
+/* Large (default): 1 row Ã 6 logos */
 .logo-wall_grid > .logo-wall_item:nth-child(n+7) {
   display: none;
 }
@@ -2253,7 +2263,7 @@ window.addEventListener('DOMContentLoaded', function() {
     initLogoWall();
   }
 })();
-</script></div></div></div><div data-wf--spacer--variant="small" class="u-section-spacer w-variant-d422cbd0-f212-c815-68df-63414354c21d u-ignore-trim"></div><div class="u-background-slot"></div></section></main><footer class="footer-basic_wrap u-section"><div data-wf--spacer--variant="none" class="u-section-spacer u-ignore-trim"></div><h2 class="footer_title u-sr-only">Footer</h2><div class="footer-basic_bottom_wrap"><div class="footer-basic_bottom_contain u-container"><div class="footer-basic_bottom_element"><div class="footer-basic_bottom_layout"><div class="footer-basic_content_wrap"><div class="footer-basic_content_data"><div class="footer_bottom_text u-text-style-small u-text-color-secondary"><span>© </span><span data-dynamic-year=" ">2026</span><span>  The Product Lift. All Rights Reserved.</span></div><div data-trigger="group" role="list" class="footer_bottom_list"><div data-trigger="hover-other focus-other" role="listitem" class="footer_bottom_item"><a href="/privacy-policy" class="footer_bottom_link_wrap w-inline-block"><div class="footer_bottom_link_text u-text-style-small">Privacy Policy</div></a></div><div data-trigger="hover-other focus-other" role="listitem" class="footer_bottom_item"><a href="/terms-conditions" class="footer_bottom_link_wrap w-inline-block"><div class="footer_bottom_link_text u-text-style-small">Terms & Conditions</div></a></div><div data-trigger="hover-other focus-other" role="listitem" class="footer_bottom_item"><a href="/confidential" class="footer_bottom_link_wrap w-inline-block"><div class="footer_bottom_link_text u-text-style-small">Site Map</div></a></div></div></div><div class="footer-basic_content_contain"><div data-wf--grid--variant="default" style="" class="u-grid-wrapper" data-number="12"><div role="none" data-large-columns="2" data-medium-columns="0" data-small-columns="1" data-xsmall-columns="0" class="u-grid"><div data-wf--grid--variant="default" style="" class="u-grid-wrapper u-gap-0" data-number="12"><div role="none" data-large-columns="1" data-medium-columns="1" data-small-columns="0" data-xsmall-columns="0" class="u-grid"><div class="footer-clock_wrap u-margin-bottom-3"><span data-dynamic-status="" style="color: var(--_theme---text-focus-tertiary);">(Offline)</span><span data-dynamic-time="">Now, 8:59:19 PM IST</span></div><div data-wf--content-wrapper--variant="left" class="u-display-contents"><div class="u-content-wrapper  "><div data-number="40" data-wf--typography-paragraph--variant="text-small" class="u-text w-variant-4099173f-f581-635c-a5fe-cf4a89c62029 u-rich-text w-richtext u-margin-bottom-2 u-text-color-tertiary"><p>Mon to Fri, 9AM - 5:30PM</p></div><div data-number="40" data-wf--typography-paragraph--variant="text-small" class="u-text w-variant-4099173f-f581-635c-a5fe-cf4a89c62029 u-rich-text w-richtext u-margin-bottom-2 u-text-color-tertiary"><p>Sat, 10AM - 2PM</p></div><div data-number="40" data-wf--typography-paragraph--variant="text-small" class="u-text w-variant-4099173f-f581-635c-a5fe-cf4a89c62029 u-rich-text w-richtext u-margin-bottom-2 u-text-color-tertiary"><p>Sundays & Bank Holidays, Closed</p></div></div></div></div></div><div data-wf--content-wrapper--variant="left" class="u-display-contents"><div class="u-content-wrapper u-alignment-start"><div data-wf--content-wrapper--variant="right" class="u-display-contents"><div class="u-content-wrapper w-variant-405b6754-709a-81de-bf32-f0102c0c7aa2 u-all-unset-small"><div data-number="-1" data-wf--typography-paragraph--variant="text-small" class="u-text w-variant-4099173f-f581-635c-a5fe-cf4a89c62029 u-rich-text w-richtext u-margin-bottom-2 u-text-color-tertiary"><p>Based in Gurugram, India</p></div><div class="u-button-wrapper u-margin-top-3" style=""><div class="u-display-contents"><div data-wf--button-main--variant="link" class="button_main_wrap w-variant-625d5df4-ad91-f7dc-9e2f-2e69f3fd7400 u-text-style-small u-text-color-primary" data-button=" " data-trigger="hover focus"><div class="clickable_wrap u-cover-absolute"><a target="_blank" href="https://www.google.com/maps/place/Gurugram/@28.4595,77.0266,13z" class="clickable_link w-inline-block"><span class="clickable_text u-sr-only">28.4595 N, 77.0266 E</span></a><button type="button" class="clickable_btn"><span class="clickable_text u-sr-only">28.4595 N, 77.0266 E</span></button></div><div class="button_main_element w-variant-625d5df4-ad91-f7dc-9e2f-2e69f3fd7400"><div class="button_main_icon w-variant-625d5df4-ad91-f7dc-9e2f-2e69f3fd7400 u-hide-if-empty"></div><div class="button_main_decoration u-hide-if-empty"></div><div aria-hidden="true" class="button_main_text u-text-style-main u-text-style-small u-text-color-primary">28.4595 N, 77.0266 E</div><div class="button_main_line w-variant-625d5df4-ad91-f7dc-9e2f-2e69f3fd7400"></div></div><div class="u-embed-js w-embed w-script"><script src="js/gsap.min_1.js"></script>
+</script></div></div></div><div data-wf--spacer--variant="small" class="u-section-spacer w-variant-d422cbd0-f212-c815-68df-63414354c21d u-ignore-trim"></div><div class="u-background-slot"></div></section></main><footer class="footer-basic_wrap u-section"><div data-wf--spacer--variant="none" class="u-section-spacer u-ignore-trim"></div><h2 class="footer_title u-sr-only">Footer</h2><div class="footer-basic_bottom_wrap"><div class="footer-basic_bottom_contain u-container"><div class="footer-basic_bottom_element"><div class="footer-basic_bottom_layout"><div class="footer-basic_content_wrap"><div class="footer-basic_content_data"><div class="footer_bottom_text u-text-style-small u-text-color-secondary"><span>Â© </span><span data-dynamic-year=" ">2026</span><span>Â Â The Product Lift. All Rights Reserved.</span></div><div data-trigger="group" role="list" class="footer_bottom_list"><div data-trigger="hover-other focus-other" role="listitem" class="footer_bottom_item"><a href="/privacy-policy" class="footer_bottom_link_wrap w-inline-block"><div class="footer_bottom_link_text u-text-style-small">Privacy Policy</div></a></div><div data-trigger="hover-other focus-other" role="listitem" class="footer_bottom_item"><a href="/terms-conditions" class="footer_bottom_link_wrap w-inline-block"><div class="footer_bottom_link_text u-text-style-small">Terms & Conditions</div></a></div><div data-trigger="hover-other focus-other" role="listitem" class="footer_bottom_item"><a href="/confidential" class="footer_bottom_link_wrap w-inline-block"><div class="footer_bottom_link_text u-text-style-small">Site Map</div></a></div></div></div><div class="footer-basic_content_contain"><div data-wf--grid--variant="default" style="" class="u-grid-wrapper" data-number="12"><div role="none" data-large-columns="2" data-medium-columns="0" data-small-columns="1" data-xsmall-columns="0" class="u-grid"><div data-wf--grid--variant="default" style="" class="u-grid-wrapper u-gap-0" data-number="12"><div role="none" data-large-columns="1" data-medium-columns="1" data-small-columns="0" data-xsmall-columns="0" class="u-grid"><div class="footer-clock_wrap u-margin-bottom-3"><span data-dynamic-status="" title="Offline" aria-label="Status: Offline" style="display:inline-block;width:8px;height:8px;border-radius:999px;vertical-align:middle;transform:translateY(-1px);margin-right:8px;background-color:#ef4444;cursor:help;">&#9679;</span><span data-dynamic-time="">Now, 8:59:19 PM IST</span></div><div data-wf--content-wrapper--variant="left" class="u-display-contents"><div class="u-content-wrapper  "><div data-number="40" data-wf--typography-paragraph--variant="text-small" class="u-text w-variant-4099173f-f581-635c-a5fe-cf4a89c62029 u-rich-text w-richtext u-margin-bottom-2 u-text-color-tertiary"><p>Mon to Fri, 9AM - 5:30PM</p></div><div data-number="40" data-wf--typography-paragraph--variant="text-small" class="u-text w-variant-4099173f-f581-635c-a5fe-cf4a89c62029 u-rich-text w-richtext u-margin-bottom-2 u-text-color-tertiary"><p>Sat, 10AM - 2PM</p></div><div data-number="40" data-wf--typography-paragraph--variant="text-small" class="u-text w-variant-4099173f-f581-635c-a5fe-cf4a89c62029 u-rich-text w-richtext u-margin-bottom-2 u-text-color-tertiary"><p>Sundays & Bank Holidays, Closed</p></div></div></div></div></div><div data-wf--content-wrapper--variant="left" class="u-display-contents"><div class="u-content-wrapper u-alignment-start"><div data-wf--content-wrapper--variant="right" class="u-display-contents"><div class="u-content-wrapper w-variant-405b6754-709a-81de-bf32-f0102c0c7aa2 u-all-unset-small"><div data-number="-1" data-wf--typography-paragraph--variant="text-small" class="u-text w-variant-4099173f-f581-635c-a5fe-cf4a89c62029 u-rich-text w-richtext u-margin-bottom-2 u-text-color-tertiary"><p>Based in Gurugram, India</p></div><div class="u-button-wrapper u-margin-top-3" style=""><div class="u-display-contents"><div data-wf--button-main--variant="link" class="button_main_wrap w-variant-625d5df4-ad91-f7dc-9e2f-2e69f3fd7400 u-text-style-small u-text-color-primary" data-button=" " data-trigger="hover focus"><div class="clickable_wrap u-cover-absolute"><a target="_blank" href="https://www.google.com/maps/place/Gurugram/@28.4595,77.0266,13z" class="clickable_link w-inline-block"><span class="clickable_text u-sr-only">28.4595 N, 77.0266 E</span></a><button type="button" class="clickable_btn"><span class="clickable_text u-sr-only">28.4595 N, 77.0266 E</span></button></div><div class="button_main_element w-variant-625d5df4-ad91-f7dc-9e2f-2e69f3fd7400"><div class="button_main_icon w-variant-625d5df4-ad91-f7dc-9e2f-2e69f3fd7400 u-hide-if-empty"></div><div class="button_main_decoration u-hide-if-empty"></div><div aria-hidden="true" class="button_main_text u-text-style-main u-text-style-small u-text-color-primary">28.4595 N, 77.0266 E</div><div class="button_main_line w-variant-625d5df4-ad91-f7dc-9e2f-2e69f3fd7400"></div></div><div class="u-embed-js w-embed w-script"><script src="js/gsap.min_1.js"></script>
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {
